@@ -22,7 +22,7 @@
 
 3. Enter the command `cd server` in your terminal to move into the server directory.
 
-## Code-along
+## Code Along
 
 We will be writing our code in the `app.py` file in the `server` directory (folder):
 
@@ -34,7 +34,7 @@ from flask import Flask
 
 This will import the `Flask` class so that we can use it to create an instance of the `Flask` class to start our Flask application.
 
-2. Write the following code on the next line:
+2. Write the following code on the next line in `app.py`:
 
 ```py
 app = Flask(__name__)
@@ -42,7 +42,7 @@ app = Flask(__name__)
 
 This will create an instance of the `Flask` class so that we can use it to start our Flask application.
 
-3. We will now build our first route and view with the following code:
+3. Write the following code on the next line in `app.py` which will create our first route and view:
 
 ```py
 @app.route('/')
@@ -50,9 +50,9 @@ def index():
     return '<h1>Welcome to my website!</h1>'
 ```
 
-This will show a page with a header that says "Welcome to my website!"
+The `index()` view will return a string containing code for a HTML header element that says "Welcome to my website!"
 
-4. To run the application that we created in this lesson, we need to run three terminal commands inside of our `pipenv` virtual environment, from the `server/` directory. Enter the following commands in your terminal:
+4. To run the application that we created in this lesson, we need to run three terminal commands inside of our `pipenv` virtual environment. We should ideally run these commands from the `server` directory where the `app.py` file is located. Enter the following commands in your terminal while inside of the `server` directory:
 
 ```
 export FLASK_APP=app.py
@@ -62,19 +62,31 @@ export FLASK_RUN_PORT=7777
 flask run
 ```
 
-`flask run` is a command run from the terminal that looks for the name of the Python module with our Flask application instance.
+`export FLASK_APP=app.py` specifies that your Flask app is located in the `app.py` file within the current directory.
 
-5. Navigate to `http://127.0.0.1:7777` and you should see the index for our application.
+`export FLASK_RUN_PORT=7777` allows you to run your Flask app on port 7777.
 
-6. We can also run a development server through treating our application module as a script with the `app.run()` method. Write the following code in `app.py`
+`flask run` is a command run from the terminal that looks for the name of the Python module with our Flask application instance and runs the Flask app.
+
+5. Navigate to `http://127.0.0.1:7777` and you should see a page that says "Welcome to my website!" We were able to create a basic webpage using a Flask route and view!
+
+6. We can also run a development server through treating our application module as a script with the `app.run()` method. Write the following code in `app.py` after the code for the `index()` view function:
 
 ```py
 if __name__ == "__main__":
     app.run(port=7777, debug=True)
 ```
 
-7. Enter the following command in the terminal to run the script and you should see that we're running the same server as before:
+7. Enter the following command in the terminal to run the script and you should see that we're running the same server as before, but with `Debug mode` set to `on`:
 
 ```
 python app.py
 ```
+
+8. If you want to set `Debug mode` to `on` when running the `flask run` command in the terminal, you can run the following command in the terminal, while inside of the `server` directory:
+
+```
+flask run --debug
+```
+
+This will allow the Flask app to detect changes to your code in `app.py` that would affect the Flask app (changes to the app's routes, views, etc) after saving those changes.
