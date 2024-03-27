@@ -101,12 +101,48 @@ def different_page():
 
 The `different_page()` view will return a string containing code for a HTML header element that says "This is another page!" You will be able to view this content when you visit `http://127.0.0.1:7777/another_page` (or `http://localhost:7777/another_page`)
 
-10. Write the following code in `app.py` after the code for the `another_page()` view function (but before the `if __name__ == "__main__"` code) which will create a route and view where the route takes in a parameter `<name>`:
+10. Write the following code in `app.py` after the code for the `different_page()` view function (but before the `if __name__ == "__main__"` code) which will create a route and view where the route takes in a parameter `<name>`:
 
 ```py
 @app.route('/intro/<name>')
 def intro(name):
-    return f'<h1>Hi! My name is {name}</h1>'
+    return f"<h1>Hi! My name is {name}.</h1>"
 ```
 
-Note that the `<` and `>` characters around `name` are what make `name` into a parameter. That means that whatever value we enter into the URL path after `/intro/` will be passed in as an argument into the `name` parameter for the `intro()` view. By default, all parameters passed in will have the `str` data type.
+Note that the `<` and `>` characters around `name` are what make `name` into a parameter for the route. That means that whatever value we enter into the URL path after `/intro/` will be passed in as an argument into the `name` parameter for the `intro()` view function that the route is associated with. Try visiting `http://127.0.0.1:7777/intro/Alice` and then try visiting `http://127.0.0.1:7777/intro/Bob` and notice the differences when visiting each page. The page will display a different name depending on the value for the `<name>` parameter! That's also thanks to our use of string interpolation in this example.
+
+There must be a parameter with the name of `name` for the `intro()` view function since the associated route passed in a parameter with the name of `name` in this case. If not, we will get an error `TypeError: intro() got an unexpected keyword argument 'name'.` that shows up in the browser when we try to view this content when visiting the route's URL.
+
+By default, all parameters passed in will have the `str` data type. A view can receive more than 1 parameter, as can be seen in the next example.
+
+11. Write the following code in `app.py` after the code for the `intro()` view function (but before the `if __name__ == "__main__"` code) which will create a route and view where the route takes in two parameters `<name>` and `<int:age>`:
+
+```py
+@app.route('/intro/<name>/<int:age>')
+def intro_2(name, age):
+    return f"<h1>Hi! My name is {name}. I'm {age} years old!</h1>"
+```
+
+It's almost the same idea here, except that we're doing something different for the second parameter, `<age>`. Notice that there's an `int:` just before `age>`. This use of `int:` allows you to change the data type of the parameter to an integer. We can change the data type of a parameter from its default `str` data type to the data type specified before the `:`. So in this case, the value of `age` is converted to an integer. Just remember that we'll need to supply an integer value for the `age` parameter in order change the parameter value's data type to an integer.
+
+If we want to change a parameter's data type to `float`, we'd need to enter a float value into the URL, otherwise the route will not interpret the value as a `float`.
+
+```py
+@app.route('/<float:number>')
+def float_example(number):
+    return f"<h1>The number is {number}</h1>"
+```
+
+```
+Example # 1 URL: http://127.0.0.1:7777/4
+
+Result: Not Found
+
+The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+```
+
+```
+Example # 2 URL: http://127.0.0.1:7777/4.0
+
+Result: The number is 4.0
+```
