@@ -68,7 +68,7 @@ flask run
 
 `flask run` is a command run from the terminal that looks for the name of the Python module with our Flask application instance and runs the Flask app.
 
-5. Navigate to `http://127.0.0.1:7777` and you should see a page that says "Welcome to my website!" We were able to create a basic webpage using a Flask route and view!
+5. Navigate to `http://127.0.0.1:7777` and you should see a page that says "Welcome to my website!" We were able to create a basic webpage using a Flask route and view! By the way, on many computers, `localhost` is an alias for the IP address `127.0.0.1`, so `http://localhost:7777` works as well.
 
 6. We can also run a development server through treating our application module as a script with the `app.run()` method. Write the following code in `app.py` after the code for the `index()` view function:
 
@@ -90,3 +90,23 @@ flask run --debug
 ```
 
 This will allow the Flask app to detect changes to your code in `app.py` that would affect the Flask app (changes to the app's routes, views, etc) after saving those changes.
+
+9. Write the following code in `app.py` after the code for the `index()` view function (but before the `if __name__ == "__main__"` code) which will create another route and view:
+
+```py
+@app.route('/another_page')
+def different_page():
+    return '<h1>This is another page!</h1>'
+```
+
+The `different_page()` view will return a string containing code for a HTML header element that says "This is another page!" You will be able to view this content when you visit `http://127.0.0.1:7777/another_page` (or `http://localhost:7777/another_page`)
+
+10. Write the following code in `app.py` after the code for the `another_page()` view function (but before the `if __name__ == "__main__"` code) which will create a route and view where the route takes in a parameter `<name>`:
+
+```py
+@app.route('/intro/<name>')
+def intro(name):
+    return f'<h1>Hi! My name is {name}</h1>'
+```
+
+Note that the `<` and `>` characters around `name` are what make `name` into a parameter. That means that whatever value we enter into the URL path after `/intro/` will be passed in as an argument into the `name` parameter for the `intro()` view. By default, all parameters passed in will have the `str` data type.
