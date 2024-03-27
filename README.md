@@ -146,3 +146,9 @@ Example # 2 URL: http://127.0.0.1:7777/4.0
 
 Result: The number is 4.0
 ```
+
+## Deliverables
+
+1. Create a `greeting()` view that takes two parameters, both of which are strings. The route for this view should be of the format `/greeting/<first_name>/<last_name>`. The view should return an `h1` element that contains text of the format `Greetings, {first_name} {last_name}!` where `first_name` represents a person's first name, and `last_name` represents a person's last name.
+
+2. Create a `count_and_square()` view that takes one parameter, an integer. The route for this view should be of the format `/count_and_square/<number>`. For all numbers in the `range` of that parameter, the view should return a string that contains those numbers squared on separate lines. For example, if the parameter has the value of `4`, the view should return a string that display the values of `1`, `4`, `9`, and `16` on separate lines since that would be the result of squaring the numbers `1`, `2`, `3`, and `4` where the range is from `1 - 4`, including `4`.
