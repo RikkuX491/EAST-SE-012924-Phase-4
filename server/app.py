@@ -6,7 +6,7 @@ from flask import Flask, make_response
 # New imports start here
 from flask_migrate import Migrate
 
-from models import db
+from models import db, Hotel
 # New imports end here
 
 app = Flask(__name__)
@@ -26,6 +26,12 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 # New code ends here
+
+@app.route('/hotels')
+def all_hotels():
+    hotels = Hotel.query.all()
+    hotel_list_with_dictionaries = [hotel.to_dict() for hotel in hotels]
+    return make_response(hotel_list_with_dictionaries)
 
 if __name__ == "__main__":
     app.run(port=7777, debug=True)
