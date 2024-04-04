@@ -1,30 +1,11 @@
-# Lecture # 2 - Flask-SQLAlchemy
+# Lecture # 3 - Modeling Relationships in Flask-SQLAlchemy
 
 ## Lecture Topics
 
-- Flask-SQLAlchemy
-- Database Migration
-  - `flask db migrate`
-- Flask Shell
-- Querying a Database in a Flask Application
-  - `Hotel.query.all()`
-  - `Hotel.query.first()`
-  - `Hotel.query.filter(Hotel.id == 1).first()`
-  - `Hotel.query.filter_by(id = 1).first()`
-  - `db.session.get(Hotel, 1)`
-- Seeding a Database
-- Serialization
-- Returning a JSON response
-- Other important Flask db terminal commands
-- `flask db init`
-- `flask db upgrade`
-- `flask db downgrade`
-- Adding new rows to the database, and committing to save changes
-  - `db.session.add(hotel1)`
-  - `db.session.commit()`
-- Deleting rows from a table
-  - `db.session.delete(hotel1)`
-  - `Hotel.query.delete()`
+- One-To-Many Relationships with Flask-SQLAlchemy
+- Many-To-Many Relationships with Flask-SQLAlchemy
+- Association Proxy
+- Serialization with Relationships
 
 ## Setup
 

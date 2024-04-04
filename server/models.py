@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.ext.associationproxy import association_proxy
 
 # contains definitions of tables and associated schema constructs
 metadata = MetaData()
@@ -9,14 +10,6 @@ metadata = MetaData()
 db = SQLAlchemy(metadata=metadata)
 
 # define a model class by inheriting from db.Model.
-class Example(db.Model, SerializerMixin):
-    __tablename__ = 'examples'
-
-    id = db.Column(db.Integer, primary_key=True)
-    columnname = db.Column(db.String)
-    price = db.Column(db.Float)
-    age = db.Column(db.Integer)
-
 class Hotel(db.Model, SerializerMixin):
     __tablename__ = 'hotels'
 
