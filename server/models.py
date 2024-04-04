@@ -4,7 +4,9 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 
 # contains definitions of tables and associated schema constructs
-metadata = MetaData()
+metadata = MetaData(naming_convention={
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s"
+})
 
 # create the Flask SQLAlchemy extension
 db = SQLAlchemy(metadata=metadata)
