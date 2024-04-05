@@ -133,13 +133,27 @@ def all_reviews():
         return make_response(response_body, 201)
 
 # GET review by id with /reviews/<int:id>
-@app.route('/reviews/<int:id>')
+@app.route('/reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def review_by_id(id):
     review = db.session.get(Review, id)
 
     if review:
-        response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
-        return make_response(response_body, 200)
+        if(request.method == 'GET'):
+            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            return make_response(response_body, 200)
+        
+        elif(request.method == 'PATCH'):
+            for attr in request.json:
+                setattr(review, attr, request.json[attr])
+            db.session.commit()
+            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            return make_response(response_body, 200)
+        
+        elif(request.method == 'DELETE'):
+            db.session.delete(review)
+            db.session.commit()
+            return make_response({}, 204)
+
     else:
         response_body = {
             "error": "Review Not Found"
