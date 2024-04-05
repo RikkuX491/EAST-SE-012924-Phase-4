@@ -15,8 +15,6 @@ db = SQLAlchemy(metadata=metadata)
 class Hotel(db.Model, SerializerMixin):
     __tablename__ = 'hotels'
 
-    # serialize_rules = ('-reviews.hotel',)
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
@@ -28,8 +26,6 @@ class Hotel(db.Model, SerializerMixin):
 
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
-
-    # serialize_rules = ('-reviews.customer',)
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
@@ -43,8 +39,6 @@ class Customer(db.Model, SerializerMixin):
 
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
-
-    # serialize_rules = ('-hotel.reviews', '-customer.reviews')
 
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer)
