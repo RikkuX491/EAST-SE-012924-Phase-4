@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import ipdb
 
-from flask import Flask, make_response
+from flask import Flask, make_response, request
 from flask_migrate import Migrate
 
 from models import db, Hotel, Customer, Review
@@ -53,7 +53,7 @@ def all_customers():
     customer_list_with_dictionaries = [customer.to_dict(only=('id', 'first_name', 'last_name')) for customer in customers]
     return make_response(customer_list_with_dictionaries, 200)
 
-# Additional code - GET customer by id with /customers/<int:id>
+# GET customer by id with /customers/<int:id>
 @app.route('/customers/<int:id>')
 def customer_by_id(id):
     customer = db.session.get(Customer, id)
@@ -78,7 +78,7 @@ def all_reviews():
     review_list_with_dictionaries = [review.to_dict(rules=('-hotel.reviews', '-customer.reviews')) for review in reviews]
     return make_response(review_list_with_dictionaries, 200)
 
-# Additional code - GET review by id with /reviews/<int:id>
+# GET review by id with /reviews/<int:id>
 @app.route('/reviews/<int:id>')
 def review_by_id(id):
     review = db.session.get(Review, id)

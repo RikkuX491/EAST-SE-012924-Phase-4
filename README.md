@@ -1,22 +1,8 @@
-# Lecture # 3 - Modeling Relationships in Flask-SQLAlchemy
+# Lecture # 4 - Retrieving Data from APIs & Building APIs
 
 ## Lecture Topics
 
-- One-To-Many Relationships with Flask-SQLAlchemy
-  - `reviews = db.relationship('Review', back_populates='hotel')`
-  - `hotel = db.relationship('Hotel', back_populates='reviews')`
-- Cascades
-  - `reviews = db.relationship('Review', back_populates='hotel', cascade='all')`
-- Setting up Foreign Key columns in a table
-  - `hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))`
-- Many-To-Many Relationships with Flask-SQLAlchemy
-- Association Proxy
-  - `customers = association_proxy('reviews', 'customer', creator = lambda c: Review(customer = c))`
-- Serialization with Relationships
-  - `rules=('-reviews.hotel', '-reviews.customer')`
-  - `only=('id', 'name')`
-  - `serialize_rules`
-  - `serialize_only`
+- Retrieving Data from APIs & Building APIs
 
 ## Setup
 
