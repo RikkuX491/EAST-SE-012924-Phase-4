@@ -4,6 +4,10 @@ import ipdb
 from flask import Flask, make_response, request
 from flask_migrate import Migrate
 
+### new imports start here ###
+from flask_restful import Api, Resource
+### new imports end here ###
+
 from models import db, Hotel, Customer, Review
 
 app = Flask(__name__)
@@ -19,6 +23,10 @@ migrate = Migrate(app, db)
 
 # initialize the Flask application to use the database
 db.init_app(app)
+
+### new code begins here ###
+api = Api(app)
+### new code ends here ###
 
 # GET all hotels with /hotels
 @app.route('/hotels', methods=['GET', 'POST'])

@@ -1,8 +1,12 @@
-# Lecture # 4 - Retrieving Data from APIs & Building APIs
+# Lecture # 5 - REST APIs with Flask
 
 ## Lecture Topics
 
-- Retrieving Data from APIs & Building APIs
+- Building REST APIs with `flask-restful`
+- Retrieve with `flask-restful` (handling `GET` requests)
+- Create with `flask-restful` (handling `POST` requests)
+- Update with `flask-restful` (handling `PATCH` requests)
+- Delete with `flask-restful` (handling `DELETE` requests)
 
 ## Setup
 
