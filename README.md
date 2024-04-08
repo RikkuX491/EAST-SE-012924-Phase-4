@@ -24,6 +24,8 @@ export FLASK_APP=app.py
 export FLASK_RUN_PORT=7777
 ```
 
+5. Run `flask run --debug` or `python app.py` to run your flask app with Debug mode set to on.
+
 ## Deliverables
 
 In line 28 of `app.py` (in the `server` directory / folder), the following line of code has created an instance of the `Api` class and stored it into a variable, `api`:
