@@ -28,28 +28,28 @@ db.init_app(app)
 api = Api(app)
 ### new code ends here ###
 
-# GET all hotels with /hotels
-@app.route('/hotels', methods=['GET', 'POST'])
-def all_hotels():
-    if(request.method == 'GET'):
+class AllHotels(Resource):
+
+    def get(self):
         hotels = Hotel.query.all()
         response_body = [hotel.to_dict(only=('id', 'name')) for hotel in hotels]
         return make_response(response_body, 200)
     
-    elif(request.method == 'POST'):
+    def post(self):
         new_hotel = Hotel(name=request.json.get('name'))
         db.session.add(new_hotel)
         db.session.commit()
         response_body = new_hotel.to_dict(only=('id', 'name'))
         return make_response(response_body, 201)
+    
+api.add_resource(AllHotels, '/hotels')
 
-# GET hotel by id with /hotels/<int:id>
-@app.route('/hotels/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def hotel_by_id(id):
-    hotel = db.session.get(Hotel, id)
+class HotelByID(Resource):
 
-    if hotel:
-        if(request.method == 'GET'):
+    def get(self, id):
+        hotel = db.session.get(Hotel, id)
+
+        if hotel:
             response_body = hotel.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
 
             # Add in the association proxy data (The hotel's customers)
@@ -57,7 +57,16 @@ def hotel_by_id(id):
             
             return make_response(response_body, 200)
         
-        if(request.method == 'PATCH'):
+        else:
+            response_body = {
+                'error': "Hotel Not Found"
+            }
+            return make_response(response_body, 404)
+        
+    def patch(self, id):
+        hotel = db.session.get(Hotel, id)
+
+        if hotel:
             for attr in request.json:
                 setattr(hotel, attr, request.json[attr])
             db.session.commit()
@@ -65,41 +74,66 @@ def hotel_by_id(id):
             response_body = hotel.to_dict(only=('id', 'name'))
             
             return make_response(response_body, 200)
+
+        else:
+            response_body = {
+                'error': "Hotel Not Found"
+            }
+            return make_response(response_body, 404)
         
-        if(request.method == 'DELETE'):
+    def delete(self, id):
+        hotel = db.session.get(Hotel, id)
+
+        if hotel:
             db.session.delete(hotel)
             db.session.commit()
             response_body = {}
             return make_response(response_body, 204)
         
-    else:
-        response_body = {
-            "error": "Hotel Not Found"
-        }
-        return make_response(response_body, 404)
+        else:
+            response_body = {
+                'error': "Hotel Not Found"
+            }
+            return make_response(response_body, 404)
+    
+api.add_resource(HotelByID, '/hotels/<int:id>')
 
-# GET all customers with /customers
-@app.route('/customers', methods=['GET', 'POST'])
-def all_customers():
-    if(request.method == 'GET'):
+# class AllRequests(Resource):
+
+#     def get(self):
+#         return make_response({'message': "Items retrieved!"})
+    
+#     def post(self):
+#         return make_response({'message': "New item created!"})
+
+#     def patch(self):
+#         return make_response({'message': "Item updated!"})
+
+#     def delete(self):
+#         return make_response({'message': 'Item deleted!'})
+
+class AllCustomers(Resource):
+
+    def get(self):
         customers = Customer.query.all()
         customer_list_with_dictionaries = [customer.to_dict(only=('id', 'first_name', 'last_name')) for customer in customers]
         return make_response(customer_list_with_dictionaries, 200)
     
-    elif(request.method == 'POST'):
+    def post(self):
         new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'))
         db.session.add(new_customer)
         db.session.commit()
         response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name'))
         return make_response(response_body, 201)
+    
+api.add_resource(AllCustomers, '/customers')
 
-# GET customer by id with /customers/<int:id>
-@app.route('/customers/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def customer_by_id(id):
-    customer = db.session.get(Customer, id)
+class CustomerByID(Resource):
 
-    if customer:
-        if(request.method == 'GET'):
+    def get(self, id):
+        customer = db.session.get(Customer, id)
+
+        if customer:
             response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
 
             # Add in the association proxy data (The customer's hotels)
@@ -107,23 +141,45 @@ def customer_by_id(id):
 
             return make_response(response_body, 200)
         
-        elif(request.method == 'PATCH'):
+        else:
+            response_body = {
+                'error': "Customer Not Found"
+            }
+            return make_response(response_body, 404)
+        
+    def patch(self, id):
+        customer = db.session.get(Customer, id)
+
+        if customer:
             for attr in request.json:
                 setattr(customer, attr, request.json[attr])
+            
             db.session.commit()
             response_body = customer.to_dict(only=('id', 'first_name', 'last_name'))
             return make_response(response_body, 200)
         
-        if(request.method == 'DELETE'):
+        else:
+            response_body = {
+                'error': "Customer Not Found"
+            }
+            return make_response(response_body, 404)
+         
+    def delete(self, id):
+        customer = db.session.get(Customer, id)
+
+        if customer:
             db.session.delete(customer)
             db.session.commit()
             response_body = {}
             return make_response(response_body, 204)
-    else:
-        response_body = {
-            "error": "Customer Not Found"
-        }
-        return make_response(response_body, 404)
+        
+        else:
+            response_body = {
+                'error': "Customer Not Found"
+            }
+            return make_response(response_body, 404)
+
+api.add_resource(CustomerByID, '/customers/<int:id>')
 
 # GET all reviews with /reviews
 @app.route('/reviews', methods=['GET', 'POST'])
