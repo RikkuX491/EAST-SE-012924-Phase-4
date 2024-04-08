@@ -4,9 +4,7 @@ import ipdb
 from flask import Flask, make_response, request
 from flask_migrate import Migrate
 
-### new imports start here ###
 from flask_restful import Api, Resource
-### new imports end here ###
 
 from models import db, Hotel, Customer, Review
 
@@ -24,10 +22,9 @@ migrate = Migrate(app, db)
 # initialize the Flask application to use the database
 db.init_app(app)
 
-### new code begins here ###
 api = Api(app)
-### new code ends here ###
 
+# Deliverable 1
 class AllHotels(Resource):
 
     def get(self):
@@ -44,6 +41,7 @@ class AllHotels(Resource):
     
 api.add_resource(AllHotels, '/hotels')
 
+# Deliverable 2
 class HotelByID(Resource):
 
     def get(self, id):
@@ -98,20 +96,7 @@ class HotelByID(Resource):
     
 api.add_resource(HotelByID, '/hotels/<int:id>')
 
-# class AllRequests(Resource):
-
-#     def get(self):
-#         return make_response({'message': "Items retrieved!"})
-    
-#     def post(self):
-#         return make_response({'message': "New item created!"})
-
-#     def patch(self):
-#         return make_response({'message': "Item updated!"})
-
-#     def delete(self):
-#         return make_response({'message': 'Item deleted!'})
-
+# Deliverable 3
 class AllCustomers(Resource):
 
     def get(self):
@@ -128,6 +113,7 @@ class AllCustomers(Resource):
     
 api.add_resource(AllCustomers, '/customers')
 
+# Deliverable 4
 class CustomerByID(Resource):
 
     def get(self, id):
@@ -181,34 +167,72 @@ class CustomerByID(Resource):
 
 api.add_resource(CustomerByID, '/customers/<int:id>')
 
-# GET all reviews with /reviews
-@app.route('/reviews', methods=['GET', 'POST'])
-def all_reviews():
-    if(request.method == 'GET'):
+# Deliverable 5
+class AllReviews(Resource):
+    
+    def get(self):
         reviews = Review.query.all()
         review_list_with_dictionaries = [review.to_dict(rules=('-hotel.reviews', '-customer.reviews')) for review in reviews]
         return make_response(review_list_with_dictionaries, 200)
     
-    elif(request.method == 'POST'):
+    def post(self):
         new_review = Review(rating=request.json.get('rating'), text=request.json.get('text'), hotel_id=request.json.get('hotel_id'), customer_id=request.json.get('customer_id'))
         db.session.add(new_review)
         db.session.commit()
         response_body = new_review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
         return make_response(response_body, 201)
+    
+api.add_resource(AllReviews, '/reviews')
 
-# GET review by id with /reviews/<int:id>
-@app.route('/reviews/<int:id>')
-def review_by_id(id):
-    review = db.session.get(Review, id)
+# Deliverable # 6
+class ReviewByID(Resource):
 
-    if review:
-        response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
-        return make_response(response_body, 200)
-    else:
-        response_body = {
-            "error": "Review Not Found"
-        }
-        return make_response(response_body, 404)
+    def get(self, id):
+        review = db.session.get(Review, id)
+
+        if review:
+            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            return make_response(response_body, 200)
+        
+        else:
+            response_body = {
+                "error": "Review Not Found"
+            }
+            return make_response(response_body, 404)
+        
+    def patch(self, id):
+        review = db.session.get(Review, id)
+
+        if review:
+            for attr in request.json:
+                setattr(review, attr, request.json.get(attr))
+            
+            db.session.commit()
+            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            return make_response(response_body, 200)
+        
+        else:
+            response_body = {
+                "error": "Review Not Found"
+            }
+            return make_response(response_body, 404)
+        
+    def delete(self, id):
+        review = db.session.get(Review, id)
+
+        if review:
+            db.session.delete(review)
+            db.session.commit()
+            response_body = {}
+            return make_response(response_body, 204)
+        
+        else:
+            response_body = {
+                "error": "Review Not Found"
+            }
+            return make_response(response_body, 404)
+
+api.add_resource(ReviewByID, '/reviews/<int:id>')
 
 if __name__ == "__main__":
     app.run(port=7777, debug=True)
