@@ -24,7 +24,6 @@ db.init_app(app)
 
 api = Api(app)
 
-# Deliverable 1
 class AllHotels(Resource):
 
     def get(self):
@@ -41,7 +40,6 @@ class AllHotels(Resource):
     
 api.add_resource(AllHotels, '/hotels')
 
-# Deliverable 2
 class HotelByID(Resource):
 
     def get(self, id):
@@ -96,7 +94,6 @@ class HotelByID(Resource):
     
 api.add_resource(HotelByID, '/hotels/<int:id>')
 
-# Deliverable 3
 class AllCustomers(Resource):
 
     def get(self):
@@ -113,7 +110,6 @@ class AllCustomers(Resource):
     
 api.add_resource(AllCustomers, '/customers')
 
-# Deliverable 4
 class CustomerByID(Resource):
 
     def get(self, id):
@@ -167,7 +163,6 @@ class CustomerByID(Resource):
 
 api.add_resource(CustomerByID, '/customers/<int:id>')
 
-# Deliverable 5
 class AllReviews(Resource):
     
     def get(self):
@@ -184,7 +179,6 @@ class AllReviews(Resource):
     
 api.add_resource(AllReviews, '/reviews')
 
-# Deliverable # 6
 class ReviewByID(Resource):
 
     def get(self, id):
