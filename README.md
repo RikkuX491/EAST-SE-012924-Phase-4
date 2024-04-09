@@ -6,6 +6,9 @@
   - `name = db.Column(db.String, nullable=False, unique=True)`
 - CheckConstraint
   - `__table_args__ = (db.CheckConstraint('first_name != last_name'),)`
+- Flask-SQLAlchemy Validations
+  - `@validates('rating')`
+  - ` @validates('first_name', 'last_name')`
 
 ## Setup
 

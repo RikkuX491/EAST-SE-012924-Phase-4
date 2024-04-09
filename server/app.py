@@ -32,11 +32,17 @@ class AllHotels(Resource):
         return make_response(response_body, 200)
     
     def post(self):
-        new_hotel = Hotel(name=request.json.get('name'))
-        db.session.add(new_hotel)
-        db.session.commit()
-        response_body = new_hotel.to_dict(only=('id', 'name'))
-        return make_response(response_body, 201)
+        try:
+            new_hotel = Hotel(name=request.json.get('name'))
+            db.session.add(new_hotel)
+            db.session.commit()
+            response_body = new_hotel.to_dict(only=('id', 'name'))
+            return make_response(response_body, 201)
+        except:
+            response_body = {
+                "error": "Hotel name cannot be null and cannot have the same name as any other hotel!"
+            }
+            return make_response(response_body, 400)
     
 api.add_resource(AllHotels, '/hotels')
 
@@ -60,22 +66,28 @@ class HotelByID(Resource):
             return make_response(response_body, 404)
         
     def patch(self, id):
-        hotel = db.session.get(Hotel, id)
+            hotel = db.session.get(Hotel, id)
 
-        if hotel:
-            for attr in request.json:
-                setattr(hotel, attr, request.json[attr])
-            db.session.commit()
-            
-            response_body = hotel.to_dict(only=('id', 'name'))
-            
-            return make_response(response_body, 200)
+            if hotel:
+                try:
+                    for attr in request.json:
+                        setattr(hotel, attr, request.json[attr])
+                    
+                    db.session.commit()    
+                    response_body = hotel.to_dict(only=('id', 'name'))
+                    return make_response(response_body, 200)
+                
+                except:
+                    response_body = {
+                        "error": "Hotel name cannot be null and cannot have the same name as any other hotel!"
+                    }
+                    return make_response(response_body, 400)
 
-        else:
-            response_body = {
-                'error': "Hotel Not Found"
-            }
-            return make_response(response_body, 404)
+            else:
+                response_body = {
+                    'error': "Hotel Not Found"
+                }
+                return make_response(response_body, 404)
         
     def delete(self, id):
         hotel = db.session.get(Hotel, id)
@@ -102,11 +114,17 @@ class AllCustomers(Resource):
         return make_response(customer_list_with_dictionaries, 200)
     
     def post(self):
-        new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'))
-        db.session.add(new_customer)
-        db.session.commit()
-        response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name'))
-        return make_response(response_body, 201)
+        try:
+            new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'))
+            db.session.add(new_customer)
+            db.session.commit()
+            response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name'))
+            return make_response(response_body, 201)
+        except:
+            response_body = {
+                "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long!"
+            }
+            return make_response(response_body, 400)
     
 api.add_resource(AllCustomers, '/customers')
 
@@ -133,12 +151,18 @@ class CustomerByID(Resource):
         customer = db.session.get(Customer, id)
 
         if customer:
-            for attr in request.json:
-                setattr(customer, attr, request.json[attr])
-            
-            db.session.commit()
-            response_body = customer.to_dict(only=('id', 'first_name', 'last_name'))
-            return make_response(response_body, 200)
+            try:
+                for attr in request.json:
+                    setattr(customer, attr, request.json[attr])
+                
+                db.session.commit()
+                response_body = customer.to_dict(only=('id', 'first_name', 'last_name'))
+                return make_response(response_body, 200)
+            except:
+                response_body = {
+                    "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long!"
+                }
+                return make_response(response_body, 400)
         
         else:
             response_body = {
@@ -171,11 +195,17 @@ class AllReviews(Resource):
         return make_response(review_list_with_dictionaries, 200)
     
     def post(self):
-        new_review = Review(rating=request.json.get('rating'), text=request.json.get('text'), hotel_id=request.json.get('hotel_id'), customer_id=request.json.get('customer_id'))
-        db.session.add(new_review)
-        db.session.commit()
-        response_body = new_review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
-        return make_response(response_body, 201)
+        try:
+            new_review = Review(rating=request.json.get('rating'), text=request.json.get('text'), hotel_id=request.json.get('hotel_id'), customer_id=request.json.get('customer_id'))
+            db.session.add(new_review)
+            db.session.commit()
+            response_body = new_review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            return make_response(response_body, 201)
+        except:
+            response_body = {
+                "error": "Rating must be an integer that is between 1 and 5!"
+            }
+            return make_response(response_body, 400)
     
 api.add_resource(AllReviews, '/reviews')
 
@@ -198,12 +228,19 @@ class ReviewByID(Resource):
         review = db.session.get(Review, id)
 
         if review:
-            for attr in request.json:
-                setattr(review, attr, request.json.get(attr))
+            try:
+                for attr in request.json:
+                    setattr(review, attr, request.json.get(attr))
+                
+                db.session.commit()
+                response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+                return make_response(response_body, 200)
             
-            db.session.commit()
-            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
-            return make_response(response_body, 200)
+            except:
+                response_body = {
+                    "error": "Rating must be an integer that is between 1 and 5!"
+                }
+                return make_response(response_body, 400)
         
         else:
             response_body = {

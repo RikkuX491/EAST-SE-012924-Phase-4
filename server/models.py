@@ -17,7 +17,7 @@ class Hotel(db.Model, SerializerMixin):
     __tablename__ = 'hotels'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, nullable=False, unique=True)
 
     # 1 hotel has many reviews: 1-to-many relationship between hotels and reviews tables
     reviews = db.relationship('Review', back_populates='hotel', cascade='all')
@@ -38,6 +38,14 @@ class Customer(db.Model, SerializerMixin):
     # hotels and customers Many-to-Many relationship: The customer's hotels
     hotels = association_proxy('reviews', 'hotel', creator = lambda h: Review(hotel = h))
 
+    __table_args__ = (db.CheckConstraint('first_name != last_name'),)
+
+    @validates('first_name', 'last_name')
+    def validate_columns(self, attr, value):
+        if (not isinstance(value, str)) or len(value) < 3:
+            raise ValueError(f"{attr} must be a string that is at least 3 characters long!")
+        return value
+
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
 
@@ -53,3 +61,10 @@ class Review(db.Model, SerializerMixin):
 
     # A review belongs to a customer: 1-to-many relationship between customers and reviews tables
     customer = db.relationship('Customer', back_populates='reviews')
+
+    @validates('rating')
+    def validate_rating(self, attr, value):
+        if not (isinstance(value, int) and 1 <= value <= 5):
+            raise ValueError(f"{attr} must be an integer that is between 1 and 5!")
+        else:
+            return value
