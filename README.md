@@ -5,7 +5,7 @@
 - SQLAlchemy Constraints
   - `name = db.Column(db.String, nullable=False, unique=True)`
 - CheckConstraint
-  - `__table_args__ = (db.CheckConstraint('(death_year is NULL) or (death_year >= birth_year)'),)`
+  - `__table_args__ = (db.CheckConstraint('first_name != last_name'),)`
 
 ## Setup
 
