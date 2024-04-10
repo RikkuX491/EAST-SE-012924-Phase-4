@@ -201,9 +201,10 @@ class AllReviews(Resource):
             db.session.commit()
             response_body = new_review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
             return make_response(response_body, 201)
-        except:
+        except ValueError as value_error:
+            value_error_string = str(value_error)
             response_body = {
-                "error": "Rating must be an integer that is between 1 and 5!"
+                "error": value_error_string
             }
             return make_response(response_body, 400)
     
@@ -236,9 +237,10 @@ class ReviewByID(Resource):
                 response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
                 return make_response(response_body, 200)
             
-            except:
+            except ValueError as value_error:
+                value_error_string = str(value_error)
                 response_body = {
-                    "error": "Rating must be an integer that is between 1 and 5!"
+                    "error": value_error_string
                 }
                 return make_response(response_body, 400)
         

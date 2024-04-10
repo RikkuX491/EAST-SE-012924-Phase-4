@@ -68,3 +68,10 @@ class Review(db.Model, SerializerMixin):
             raise ValueError(f"{attr} must be an integer that is between 1 and 5!")
         else:
             return value
+        
+    @validates('hotel_id', 'customer_id')
+    def validate_hotel_id_and_customer_id(self, attr, value):
+        if not (isinstance(value, int)):
+            raise ValueError(f"{attr} must be an integer!")
+        else:
+            return value
