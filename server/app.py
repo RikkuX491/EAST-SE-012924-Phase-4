@@ -3,8 +3,8 @@ import ipdb
 
 from flask import Flask, make_response, request
 from flask_migrate import Migrate
-
 from flask_restful import Api, Resource
+from flask_cors import CORS
 
 from models import db, Hotel, Customer, Review
 
@@ -15,6 +15,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hotels.db'
 
 # disable modification tracking to use less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# CORS(app)
 
 # create a Migrate object to manage schema modifications
 migrate = Migrate(app, db)
@@ -28,15 +30,15 @@ class AllHotels(Resource):
 
     def get(self):
         hotels = Hotel.query.all()
-        response_body = [hotel.to_dict(only=('id', 'name')) for hotel in hotels]
+        response_body = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in hotels]
         return make_response(response_body, 200)
     
     def post(self):
         try:
-            new_hotel = Hotel(name=request.json.get('name'))
+            new_hotel = Hotel(name=request.json.get('name'), image=request.json.get('image'))
             db.session.add(new_hotel)
             db.session.commit()
-            response_body = new_hotel.to_dict(only=('id', 'name'))
+            response_body = new_hotel.to_dict(only=('id', 'name', 'image'))
             return make_response(response_body, 201)
         except:
             response_body = {
@@ -74,7 +76,7 @@ class HotelByID(Resource):
                         setattr(hotel, attr, request.json[attr])
                     
                     db.session.commit()    
-                    response_body = hotel.to_dict(only=('id', 'name'))
+                    response_body = hotel.to_dict(only=('id', 'name', 'image'))
                     return make_response(response_body, 200)
                 
                 except:
@@ -137,7 +139,7 @@ class CustomerByID(Resource):
             response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
 
             # Add in the association proxy data (The customer's hotels)
-            response_body['hotels'] = [hotel.to_dict(only=('id', 'name')) for hotel in customer.hotels]
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in customer.hotels]
 
             return make_response(response_body, 200)
         

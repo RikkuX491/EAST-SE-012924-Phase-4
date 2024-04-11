@@ -1,14 +1,10 @@
-# Lecture # 6 - Constraints and Validations
+# Lecture # 7 - Client & Server Communication
 
 ## Lecture Topics
 
-- SQLAlchemy Constraints
-  - `name = db.Column(db.String, nullable=False, unique=True)`
-- CheckConstraint
-  - `__table_args__ = (db.CheckConstraint('first_name != last_name'),)`
-- Flask-SQLAlchemy Validations
-  - `@validates('rating')`
-  - ` @validates('first_name', 'last_name')`
+- Adding React to Flask
+- CORS (Cross-Origin Resource Sharing)
+- How to proxy the requests to our API
 
 ## Setup
 
@@ -27,3 +23,7 @@ export FLASK_RUN_PORT=7777
 ```
 
 5. Run `flask run --debug` or `python app.py` to run your flask app with Debug mode set to on.
+
+6. In another terminal, run `npm install --prefix client` in your terminal to install the dependencies from the `package.json` file.
+
+7. Run `npm start` in your terminal to run this React app in the browser. If your browser does not automatically open the page for you, open [http://localhost:4000](http://localhost:4000) to view it in your browser.

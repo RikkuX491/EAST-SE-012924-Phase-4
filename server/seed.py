@@ -8,13 +8,13 @@ with app.app_context():
     Customer.query.delete()
     Review.query.delete()
 
-    hotel1 = Hotel(name="Marriott")
-    hotel2 = Hotel(name="Hampton Inn")
-    hotel3 = Hotel(name="The Chanler at Cliff Walk")
+    hotel1 = Hotel(name="Marriott", image="/images/marriott.png")
+    hotel2 = Hotel(name="Waikiki Resort", image="/images/waikiki-resort.png")
+    hotel3 = Hotel(name="Bahamas Resort", image="/images/bahamas-resort.png")
 
     customer1 = Customer(first_name="Alice", last_name="Baker")
-    customer2 = Customer(first_name="Bob", last_name="Willis")
-    customer3 = Customer(first_name="Cindy", last_name="Davidson")
+    customer2 = Customer(first_name="Bob", last_name="Carris")
+    customer3 = Customer(first_name="Cynthia", last_name="Dawson")
 
     review1 = Review(rating=5, text="Best hotel ever!", hotel_id=1, customer_id=1)
     review2 = Review(rating=4, text="Amazing!", hotel_id=1, customer_id=2)

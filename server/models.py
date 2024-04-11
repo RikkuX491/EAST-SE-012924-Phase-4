@@ -18,6 +18,7 @@ class Hotel(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
+    image = db.Column(db.String, nullable=False)
 
     # 1 hotel has many reviews: 1-to-many relationship between hotels and reviews tables
     reviews = db.relationship('Review', back_populates='hotel', cascade='all')
