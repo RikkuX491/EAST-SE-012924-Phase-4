@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useOutletContext} from "react-router-dom";
 
 function NewHotelForm() {
 
   const {addHotel} = useOutletContext()
-  const navigate = useNavigate()
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,8 +24,6 @@ function NewHotelForm() {
       name: "",
       image: ""
     })
-
-    navigate('/')
   }
 
   return (

@@ -42,7 +42,7 @@ class AllHotels(Resource):
             return make_response(response_body, 201)
         except:
             response_body = {
-                "error": "Hotel name cannot be null and cannot have the same name as any other hotel!"
+                "error": "Hotel must have a name and image, and the hotel name cannot be the same name as any other hotel!"
             }
             return make_response(response_body, 400)
     
@@ -81,7 +81,7 @@ class HotelByID(Resource):
                 
                 except:
                     response_body = {
-                        "error": "Hotel name cannot be null and cannot have the same name as any other hotel!"
+                        "error": "Hotel must have a name and image, and the hotel name cannot be the same name as any other hotel!"
                     }
                     return make_response(response_body, 400)
 

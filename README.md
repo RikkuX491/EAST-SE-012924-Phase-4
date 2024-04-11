@@ -26,4 +26,4 @@ export FLASK_RUN_PORT=7777
 
 6. In another terminal, run `npm install --prefix client` in your terminal to install the dependencies from the `package.json` file.
 
-7. Run `npm start` in your terminal to run this React app in the browser. If your browser does not automatically open the page for you, open [http://localhost:4000](http://localhost:4000) to view it in your browser.
+7. Run `npm start --prefix client` in your terminal to run this React app in the browser. If your browser does not automatically open the page for you, open [http://localhost:4000](http://localhost:4000) to view it in your browser.

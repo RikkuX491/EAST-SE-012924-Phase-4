@@ -18,6 +18,24 @@ function HotelProfile(){
 
     useEffect(() => {
         // GET request - Write the code to retrieve a hotel by id and update the 'hotel' state with the hotel data.
+        fetch(`/hotels/${id}`)
+        .then(response => {
+            if(response.ok){
+                response.json().then(hotelData => {
+                    setHotel(hotelData)
+                    setFormData({
+                        name: hotelData.name,
+                        image: hotelData.image
+                    })
+                })
+            }
+            else if(response.status === 404){
+                response.json().then(errorData => alert(`Error: ${errorData.error}`))
+            }
+            else{
+                response.json().then(() => alert("Error: Something went wrong."))
+            }
+        })
     }, [])
 
     function handleDeleteButtonClick(){
@@ -33,8 +51,8 @@ function HotelProfile(){
     function handleSubmit(event){
         event.preventDefault()
 
-        updateHotel(hotel.id, formData)
-        setHotel({...hotel, ...formData})
+        updateHotel(hotel.id, formData, setHotel)
+        // setHotel({...hotel, ...formData})
 
         toggleDisplayForm()
     }
