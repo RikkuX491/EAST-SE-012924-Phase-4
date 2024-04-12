@@ -1,10 +1,11 @@
-# Lecture # 7 - Client & Server Communication
+# Lecture # 8 - Authentication
 
 ## Lecture Topics
 
-- Adding React to Flask
-- CORS (Cross-Origin Resource Sharing)
-- How to proxy the requests to our API
+- Logging in a user
+- Using a session to keep a user logged in
+- Logging out a user
+- Authenticating users
 
 ## Setup
 
