@@ -12,9 +12,9 @@ with app.app_context():
     hotel2 = Hotel(name="Waikiki Resort", image="/images/waikiki-resort.png")
     hotel3 = Hotel(name="Bahamas Resort", image="/images/bahamas-resort.png")
 
-    customer1 = Customer(first_name="Alice", last_name="Baker")
-    customer2 = Customer(first_name="Bob", last_name="Carris")
-    customer3 = Customer(first_name="Cynthia", last_name="Dawson")
+    customer1 = Customer(first_name="Alice", last_name="Baker", username="alicebaker123")
+    customer2 = Customer(first_name="Bob", last_name="Carris", username="bobcarris456")
+    customer3 = Customer(first_name="Cynthia", last_name="Dawson", username="cynthiadawson789")
 
     review1 = Review(rating=5, text="Best hotel ever!", hotel_id=1, customer_id=1)
     review2 = Review(rating=4, text="Amazing!", hotel_id=1, customer_id=2)

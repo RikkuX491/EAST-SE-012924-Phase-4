@@ -32,6 +32,7 @@ class Customer(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
+    username = db.Column(db.String, nullable=False)
 
     # 1 customer has many reviews: 1-to-many relationship between customers and reviews tables
     reviews = db.relationship('Review', back_populates='customer', cascade='all')
