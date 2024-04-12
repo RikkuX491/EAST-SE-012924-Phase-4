@@ -26,9 +26,9 @@ function App(){
                     setCustomer(customerData)
                 })
             }
-            // else if(response.status === 401){
-            //     response.json().then(errorData => alert(`Error: ${errorData.error}`))
-            // }
+            else if(response.status === 401){
+                navigate('/login')
+            }
         })
     }, [])
 
@@ -133,7 +133,7 @@ function App(){
                 })
             }
             else if(response.status === 401){
-                response.json().then(errorData => alert(errorData.error))
+                response.json().then(errorData => alert(`Error: ${errorData.error}`))
             }
         })
     }
@@ -157,7 +157,7 @@ function App(){
         <NavBar customer={customer} logOutCustomer={logOutCustomer}/>
         <Header/>
         {customer ? <h1>Welcome {customer.username}!</h1> : null}
-        {!customer ? <Navigate to="/login"/> : null}
+        {/* {!customer ? <Navigate to="/login"/> : null} */}
         <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInCustomer: logInCustomer}}/>
       </div>
     );
