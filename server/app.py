@@ -9,6 +9,7 @@ from flask_cors import CORS
 from models import db, Hotel, Customer, Review
 
 app = Flask(__name__)
+app.secret_key = b'`j\xf4\xc4:c\xb1*\xd5\xac\xdfq \xf1q\x82'
 
 # configure a database connection to the local file examples.db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hotels.db'
@@ -139,7 +140,7 @@ class CustomerByID(Resource):
             response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
 
             # Add in the association proxy data (The customer's hotels)
-            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in customer.hotels]
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
 
             return make_response(response_body, 200)
         
@@ -268,6 +269,59 @@ class ReviewByID(Resource):
             return make_response(response_body, 404)
 
 api.add_resource(ReviewByID, '/reviews/<int:id>')
+
+class Login(Resource):
+
+    def post(self):
+        username = request.json.get('username')
+        customer = Customer.query.filter(Customer.username == username).first()
+
+        if(customer):
+            session['customer_id'] = customer.id
+            response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+
+            # Add in the association proxy data (The customer's hotels)
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
+
+            return make_response(response_body, 201)
+        else:
+            response_body = {
+                "error": "Invalid username!"
+            }
+            return make_response(response_body, 401)
+    
+api.add_resource(Login, '/login')
+
+class CheckSession(Resource):
+
+    def get(self):
+        customer = db.session.get(Customer, session.get('customer_id'))
+
+        if(customer):
+            response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+
+            # Add in the association proxy data (The customer's hotels)
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
+
+            return make_response(response_body, 200)
+        else:
+            response_body = {
+                "error": "Please Log In!"
+            }
+            return make_response(response_body, 401)
+
+api.add_resource(CheckSession, '/check_session')
+
+class Logout(Resource):
+    
+    def delete(self):
+        if(session.get('customer_id')):
+            del(session['customer_id'])
+
+        response_body = {}
+        return make_response(response_body, 204)
+    
+api.add_resource(Logout, '/logout')
 
 if __name__ == "__main__":
     app.run(port=7777, debug=True)

@@ -1,6 +1,6 @@
 import Header from "./Header";
 import { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Navigate } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function App(){
@@ -8,12 +8,28 @@ function App(){
     const navigate = useNavigate()
 
     const [hotels, setHotels] = useState([])
+    
+    const [customer, setCustomer] = useState(null)
 
     useEffect(() => {
         // GET request - Write the code to retrieve all hotels and update the 'hotels' state with the hotel data.
         fetch('/hotels')
         .then(response => response.json())
         .then(hotelsData => setHotels(hotelsData))
+    }, [])
+
+    useEffect(() => {
+        fetch('/check_session')
+        .then(response => {
+            if(response.ok){
+                response.json().then(customerData => {
+                    setCustomer(customerData)
+                })
+            }
+            // else if(response.status === 401){
+            //     response.json().then(errorData => alert(`Error: ${errorData.error}`))
+            // }
+        })
     }, [])
 
     function addHotel(newHotel){
@@ -100,11 +116,49 @@ function App(){
         })
     }
 
+    function logInCustomer(loginData){
+        fetch('/login', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => {
+            if(response.ok){
+                response.json().then(customerData => {
+                    setCustomer(customerData)
+                    navigate('/')
+                })
+            }
+            else if(response.status === 401){
+                response.json().then(errorData => alert(errorData.error))
+            }
+        })
+    }
+
+    function logOutCustomer(){
+        fetch('/logout', {
+            method: "DELETE"
+        })
+        .then(response => {
+            if(response.ok){
+                setCustomer(null)
+            }
+            else{
+                alert("Error: Unable to log customer out!")
+            }
+        })
+    }
+
     return (
       <div className="app">
-        <NavBar/>
+        <NavBar customer={customer} logOutCustomer={logOutCustomer}/>
         <Header/>
-        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel}}/>
+        {customer ? <h1>Welcome {customer.username}!</h1> : null}
+        {!customer ? <Navigate to="/login"/> : null}
+        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInCustomer: logInCustomer}}/>
       </div>
     );
 }
