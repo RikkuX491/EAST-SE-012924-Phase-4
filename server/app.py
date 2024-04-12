@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import ipdb
 
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, session
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_cors import CORS
@@ -57,7 +57,7 @@ class HotelByID(Resource):
             response_body = hotel.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
 
             # Add in the association proxy data (The hotel's customers)
-            response_body['customers'] = [customer.to_dict(only=('id', 'first_name', 'last_name')) for customer in hotel.customers]
+            response_body['customers'] = [customer.to_dict(only=('id', 'first_name', 'last_name', 'username')) for customer in hotel.customers]
             
             return make_response(response_body, 200)
         
@@ -112,19 +112,19 @@ class AllCustomers(Resource):
 
     def get(self):
         customers = Customer.query.all()
-        customer_list_with_dictionaries = [customer.to_dict(only=('id', 'first_name', 'last_name')) for customer in customers]
+        customer_list_with_dictionaries = [customer.to_dict(only=('id', 'first_name', 'last_name', 'username')) for customer in customers]
         return make_response(customer_list_with_dictionaries, 200)
     
     def post(self):
         try:
-            new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'))
+            new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'))
             db.session.add(new_customer)
             db.session.commit()
-            response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name'))
+            response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name', 'username'))
             return make_response(response_body, 201)
         except:
             response_body = {
-                "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long!"
+                "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! Customer must have a username!"
             }
             return make_response(response_body, 400)
     
@@ -158,11 +158,11 @@ class CustomerByID(Resource):
                     setattr(customer, attr, request.json[attr])
                 
                 db.session.commit()
-                response_body = customer.to_dict(only=('id', 'first_name', 'last_name'))
+                response_body = customer.to_dict(only=('id', 'first_name', 'last_name', 'username'))
                 return make_response(response_body, 200)
             except:
                 response_body = {
-                    "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long!"
+                    "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! Customer must have a username!"
                 }
                 return make_response(response_body, 400)
         
