@@ -41,4 +41,7 @@ app.secret_key = 'EXAMPLE_SECRET_KEY'
 
 ```shell
 python -c 'import os; print(os.urandom(16))'
+# => b'_5#y2L"F4Q8z\n\xec]/'
+
+# keep this somewhere safe!
 ```
