@@ -294,7 +294,7 @@ class Login(Resource):
             return make_response(response_body, 201)
         else:
             response_body = {
-                "error": "Invalid username or password!"
+                "error": "Invalid username!"
             }
             return make_response(response_body, 401)
     
