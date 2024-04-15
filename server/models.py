@@ -23,21 +23,23 @@ class Hotel(db.Model, SerializerMixin):
     # 1 hotel has many reviews: 1-to-many relationship between hotels and reviews tables
     reviews = db.relationship('Review', back_populates='hotel', cascade='all')
 
-    # hotels and customers Many-to-Many relationship: The hotel's customers
-    customers = association_proxy('reviews', 'customer', creator = lambda c: Review(customer = c))
+    # hotels and users Many-to-Many relationship: The hotel's users
+    users = association_proxy('reviews', 'user', creator = lambda u: Review(user = u))
 
-class Customer(db.Model, SerializerMixin):
-    __tablename__ = 'customers'
+class User(db.Model, SerializerMixin):
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     username = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
+    type = db.Column(db.String, nullable=False)
 
-    # 1 customer has many reviews: 1-to-many relationship between customers and reviews tables
-    reviews = db.relationship('Review', back_populates='customer', cascade='all')
+    # 1 user has many reviews: 1-to-many relationship between users and reviews tables
+    reviews = db.relationship('Review', back_populates='user', cascade='all')
 
-    # hotels and customers Many-to-Many relationship: The customer's hotels
+    # hotels and users Many-to-Many relationship: The user's hotels
     hotels = association_proxy('reviews', 'hotel', creator = lambda h: Review(hotel = h))
 
     __table_args__ = (db.CheckConstraint('first_name != last_name'),)
@@ -56,13 +58,13 @@ class Review(db.Model, SerializerMixin):
     text = db.Column(db.String)
 
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # A review belongs to a hotel: 1-to-many relationship between hotels and reviews tables
     hotel = db.relationship('Hotel', back_populates='reviews')
 
-    # A review belongs to a customer: 1-to-many relationship between customers and reviews tables
-    customer = db.relationship('Customer', back_populates='reviews')
+    # A review belongs to a user: 1-to-many relationship between users and reviews tables
+    user = db.relationship('User', back_populates='reviews')
 
     @validates('rating')
     def validate_rating(self, attr, value):

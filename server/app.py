@@ -10,7 +10,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 # New imports end here
 
-from models import db, Hotel, Customer, Review
+from models import db, Hotel, User, Review
 
 app = Flask(__name__)
 app.secret_key = b'`j\xf4\xc4:c\xb1*\xd5\xac\xdfq \xf1q\x82'
