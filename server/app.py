@@ -6,6 +6,10 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_cors import CORS
 
+# New imports start here
+from flask_bcrypt import Bcrypt
+# New imports end here
+
 from models import db, Hotel, Customer, Review
 
 app = Flask(__name__)
@@ -24,6 +28,10 @@ migrate = Migrate(app, db)
 
 # initialize the Flask application to use the database
 db.init_app(app)
+
+# New code starts here
+bcrypt = Bcrypt(app)
+# New code ends here
 
 api = Api(app)
 

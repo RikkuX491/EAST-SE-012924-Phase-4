@@ -1,11 +1,9 @@
-# Lecture # 8 - Authentication
+# Lecture # 9 - Authorization
 
 ## Lecture Topics
 
-- Logging in a user
-- Using a session to keep a user logged in
-- Logging out a user
-- Authenticating users
+- Authorizing Requests
+- Password Protection with Bcrypt
 
 ## Setup
 
@@ -28,20 +26,3 @@ export FLASK_RUN_PORT=7777
 6. In another terminal, run `npm install --prefix client` in your terminal to install the dependencies from the `package.json` file.
 
 7. Run `npm start --prefix client` in your terminal to run this React app in the browser. If your browser does not automatically open the page for you, open [http://localhost:4000](http://localhost:4000) to view it in your browser.
-
-## Important notes
-
-1. Your Flask server should have a key, configured in your app:
-
-```python
-app.secret_key = 'EXAMPLE_SECRET_KEY'
-```
-
-2. The best strategy for generating a good secret key is using the os module from the command line:
-
-```shell
-python -c 'import os; print(os.urandom(16))'
-# => b'_5#y2L"F4Q8z\n\xec]/'
-
-# keep this somewhere safe!
-```
