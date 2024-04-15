@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from app import app
+from app import app, bcrypt
 from models import db, Hotel, User, Review
 
 with app.app_context():
