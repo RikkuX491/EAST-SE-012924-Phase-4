@@ -73,9 +73,9 @@ class Review(db.Model, SerializerMixin):
         else:
             return value
         
-    @validates('hotel_id', 'customer_id')
+    @validates('hotel_id', 'user_id')
     def validate_hotel_id_and_customer_id(self, attr, value):
         if not (isinstance(value, int)):
-            raise ValueError(f"{attr} must be an integer!")
+            raise ValueError(f"Review must have a {attr} and {attr} must be an integer!")
         else:
             return value

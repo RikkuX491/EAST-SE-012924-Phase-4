@@ -63,10 +63,10 @@ class HotelByID(Resource):
         hotel = db.session.get(Hotel, id)
 
         if hotel:
-            response_body = hotel.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+            response_body = hotel.to_dict(rules=('-reviews.hotel', '-reviews.user'))
 
-            # Add in the association proxy data (The hotel's customers)
-            response_body['customers'] = [customer.to_dict(only=('id', 'first_name', 'last_name', 'username')) for customer in hotel.customers]
+            # Add in the association proxy data (The hotel's users) while removing duplicate user data for the hotel's users
+            response_body['users'] = [user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type')) for user in list(set(hotel.users))]
             
             return make_response(response_body, 200)
         
@@ -117,100 +117,100 @@ class HotelByID(Resource):
     
 api.add_resource(HotelByID, '/hotels/<int:id>')
 
-class AllCustomers(Resource):
+class AllUsers(Resource):
 
     def get(self):
-        customers = Customer.query.all()
-        customer_list_with_dictionaries = [customer.to_dict(only=('id', 'first_name', 'last_name', 'username')) for customer in customers]
-        return make_response(customer_list_with_dictionaries, 200)
+        users = User.query.all()
+        user_list_with_dictionaries = [user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type')) for user in users]
+        return make_response(user_list_with_dictionaries, 200)
     
     def post(self):
         try:
-            new_customer = Customer(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'))
-            db.session.add(new_customer)
+            new_user = User(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'), password_hash=request.json.get('password'), type='customer')
+            db.session.add(new_user)
             db.session.commit()
-            response_body = new_customer.to_dict(only=('id', 'first_name', 'last_name', 'username'))
+            response_body = new_user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
             return make_response(response_body, 201)
         except:
             response_body = {
-                "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! Customer must have a username!"
+                "error": "User's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! User must have a username and password!"
             }
             return make_response(response_body, 400)
     
-api.add_resource(AllCustomers, '/customers')
+api.add_resource(AllUsers, '/users')
 
-class CustomerByID(Resource):
+class UserByID(Resource):
 
     def get(self, id):
-        customer = db.session.get(Customer, id)
+        user = db.session.get(User, id)
 
-        if customer:
-            response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+        if user:
+            response_body = user.to_dict(rules=('-reviews.hotel', '-reviews.user', '-password_hash'))
 
-            # Add in the association proxy data (The customer's hotels)
-            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
+            # Add in the association proxy data (The user's hotels) while removing duplicate hotel data for the user's hotels
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(user.hotels))]
 
             return make_response(response_body, 200)
         
         else:
             response_body = {
-                'error': "Customer Not Found"
+                'error': "User Not Found"
             }
             return make_response(response_body, 404)
         
     def patch(self, id):
-        customer = db.session.get(Customer, id)
+        user = db.session.get(User, id)
 
-        if customer:
+        if user:
             try:
                 for attr in request.json:
-                    setattr(customer, attr, request.json[attr])
+                    setattr(user, attr, request.json[attr])
                 
                 db.session.commit()
-                response_body = customer.to_dict(only=('id', 'first_name', 'last_name', 'username'))
+                response_body = user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
                 return make_response(response_body, 200)
             except:
                 response_body = {
-                    "error": "Customer's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! Customer must have a username!"
+                    "error": "User's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! User must have a username and password!"
                 }
                 return make_response(response_body, 400)
         
         else:
             response_body = {
-                'error': "Customer Not Found"
+                'error': "User Not Found"
             }
             return make_response(response_body, 404)
          
     def delete(self, id):
-        customer = db.session.get(Customer, id)
+        user = db.session.get(User, id)
 
-        if customer:
-            db.session.delete(customer)
+        if user:
+            db.session.delete(user)
             db.session.commit()
             response_body = {}
             return make_response(response_body, 204)
         
         else:
             response_body = {
-                'error': "Customer Not Found"
+                'error': "User Not Found"
             }
             return make_response(response_body, 404)
 
-api.add_resource(CustomerByID, '/customers/<int:id>')
+api.add_resource(UserByID, '/users/<int:id>')
 
 class AllReviews(Resource):
     
     def get(self):
         reviews = Review.query.all()
-        review_list_with_dictionaries = [review.to_dict(rules=('-hotel.reviews', '-customer.reviews')) for review in reviews]
+        review_list_with_dictionaries = [review.to_dict(rules=('-hotel.reviews', '-user.reviews', '-user.password_hash')) for review in reviews]
         return make_response(review_list_with_dictionaries, 200)
     
     def post(self):
         try:
-            new_review = Review(rating=request.json.get('rating'), text=request.json.get('text'), hotel_id=request.json.get('hotel_id'), customer_id=request.json.get('customer_id'))
+            new_review = Review(rating=request.json.get('rating'), text=request.json.get('text'), hotel_id=request.json.get('hotel_id'), user_id=request.json.get('user_id'))
             db.session.add(new_review)
             db.session.commit()
-            response_body = new_review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            response_body = new_review.to_dict(rules=('-hotel.reviews', '-user.reviews', '-user.password_hash'))
             return make_response(response_body, 201)
         except ValueError as value_error:
             value_error_string = str(value_error)
@@ -227,7 +227,7 @@ class ReviewByID(Resource):
         review = db.session.get(Review, id)
 
         if review:
-            response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+            response_body = review.to_dict(rules=('-hotel.reviews', '-user.reviews', '-user.password_hash'))
             return make_response(response_body, 200)
         
         else:
@@ -245,7 +245,7 @@ class ReviewByID(Resource):
                     setattr(review, attr, request.json.get(attr))
                 
                 db.session.commit()
-                response_body = review.to_dict(rules=('-hotel.reviews', '-customer.reviews'))
+                response_body = review.to_dict(rules=('-hotel.reviews', '-user.reviews', '-user.password_hash'))
                 return make_response(response_body, 200)
             
             except ValueError as value_error:
@@ -282,14 +282,14 @@ class Login(Resource):
 
     def post(self):
         username = request.json.get('username')
-        customer = Customer.query.filter(Customer.username == username).first()
+        user = User.query.filter(User.username == username).first()
 
-        if(customer):
-            session['customer_id'] = customer.id
-            response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+        if(user):
+            session['user_id'] = user.id
+            response_body = user.to_dict(rules=('-reviews.hotel', '-reviews.user', '-password_hash'))
 
-            # Add in the association proxy data (The customer's hotels)
-            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
+            # Add in the association proxy data (The user's hotels) while removing duplicate hotel data for the user's hotels
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(user.hotels))]
 
             return make_response(response_body, 201)
         else:
@@ -303,13 +303,13 @@ api.add_resource(Login, '/login')
 class CheckSession(Resource):
 
     def get(self):
-        customer = db.session.get(Customer, session.get('customer_id'))
+        user = db.session.get(User, session.get('user_id'))
 
-        if(customer):
-            response_body = customer.to_dict(rules=('-reviews.hotel', '-reviews.customer'))
+        if(user):
+            response_body = user.to_dict(rules=('-reviews.hotel', '-reviews.user', '-password_hash'))
 
-            # Add in the association proxy data (The customer's hotels)
-            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(customer.hotels))]
+            # Add in the association proxy data (The user's hotels) while removing duplicate hotel data for the user's hotels
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(user.hotels))]
 
             return make_response(response_body, 200)
         else:
@@ -323,8 +323,8 @@ api.add_resource(CheckSession, '/check_session')
 class Logout(Resource):
     
     def delete(self):
-        if(session.get('customer_id')):
-            del(session['customer_id'])
+        if(session.get('user_id')):
+            del(session['user_id'])
 
         response_body = {}
         return make_response(response_body, 204)

@@ -23,7 +23,7 @@ with app.app_context():
     review4 = Review(rating=3, text="Not as good as the first time I was there.", hotel_id=1, user_id=1)
     
     db.session.add_all([hotel1, hotel2, hotel3])
-    db.session.add_all([user1, user2, user3])
+    db.session.add_all([user1, user2, user3, user4])
     db.session.add_all([review1, review2, review3, review4])
 
     db.session.commit()
