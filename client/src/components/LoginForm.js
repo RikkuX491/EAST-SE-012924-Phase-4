@@ -4,29 +4,29 @@ import { useOutletContext } from 'react-router-dom';
 
 function LoginForm(){
 
-    const [username, setUsername] = useState("")
+    const [formData, setFormData] = useState({
+        username: "",
+        password: ""
+    })
 
-    const {logInCustomer} = useOutletContext()
+    const {logInUser} = useOutletContext()
 
-    function updateUsername(event){
-        setUsername(event.target.value)
+    function updateFormData(event){
+        setFormData({...formData, [event.target.name]: event.target.value})
     }
 
     function handleSubmit(event){
         event.preventDefault()
 
-        const loginData = {
-            username: username
-        }
-
-        logInCustomer(loginData)
+        logInUser(formData)
     }
 
     return (
         <div className="new-hotel-form">
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
-            <input onChange={updateUsername} type="text" name="username" placeholder="Username" value={username} required />
+            <input onChange={updateFormData} type="text" name="username" placeholder="Username" value={formData.username} required />
+            <input onChange={updateFormData} type="password" name="password" placeholder="Password" value={formData.password} required />
             <button type="submit">Login</button>
         </form>
     </div>

@@ -9,21 +9,22 @@ function App(){
 
     const [hotels, setHotels] = useState([])
     
-    const [customer, setCustomer] = useState(null)
+    const [user, setUser] = useState(null)
 
     useEffect(() => {
-        // GET request - Write the code to retrieve all hotels and update the 'hotels' state with the hotel data.
+        // GET request - Retrieve all hotels and update the 'hotels' state with the hotel data.
         fetch('/hotels')
         .then(response => response.json())
         .then(hotelsData => setHotels(hotelsData))
     }, [])
 
     useEffect(() => {
+        // GET request - Check if the user is logged in
         fetch('/check_session')
         .then(response => {
             if(response.ok){
-                response.json().then(customerData => {
-                    setCustomer(customerData)
+                response.json().then(userData => {
+                    setUser(userData)
                 })
             }
             else if(response.status === 401){
@@ -33,7 +34,7 @@ function App(){
     }, [])
 
     function addHotel(newHotel){
-        // POST request - Write the code to create a new hotel and update the 'hotels' state to add the new hotel to the state.
+        // POST request - Create a new hotel and update the 'hotels' state to add the new hotel to the state.
         // newHotel - contains an object with the new hotel data for the POST request.
         fetch('/hotels', {
             method: "POST",
@@ -60,9 +61,10 @@ function App(){
     }
 
     function updateHotel(id, hotelDataForUpdate, setHotelFromHotelProfile){
-        // PATCH request - Write the code to update a hotel by id and update the 'hotels' state with the updated hotel data.
+        // PATCH request - Update a hotel by id and update the 'hotels' state with the updated hotel data.
         // id - contains a number that refers to the id for the hotel that should be updated.
         // hotelDataForUpdate - contains an object with the hotel data for the PATCH request.
+        // setHotelFromHotelsProfile - contains the setter function 'setHotel' from the HotelProfile component.
         fetch(`/hotels/${id}`, {
             method: "PATCH",
             headers: {
@@ -99,7 +101,7 @@ function App(){
     }
 
     function deleteHotel(id){
-        // DELETE request - Write the code to delete a hotel by id and update the 'hotels' state to remove the hotel from the state.
+        // DELETE request - Delete a hotel by id and update the 'hotels' state to remove the hotel from the state.
         // id - contains a number that refers to the id for the hotel that should be deleted.
         fetch(`/hotels/${id}`, {
             method: "DELETE"
@@ -116,7 +118,8 @@ function App(){
         })
     }
 
-    function logInCustomer(loginData){
+    function logInUser(loginData){
+        // POST request - Log in a user.
         fetch('/login', {
             method: "POST",
             headers: {
@@ -127,8 +130,8 @@ function App(){
         })
         .then(response => {
             if(response.ok){
-                response.json().then(customerData => {
-                    setCustomer(customerData)
+                response.json().then(userData => {
+                    setUser(userData)
                     navigate('/')
                 })
             }
@@ -138,27 +141,27 @@ function App(){
         })
     }
 
-    function logOutCustomer(){
+    function logOutUser(){
+        // DELETE request - Log out a user.
         fetch('/logout', {
             method: "DELETE"
         })
         .then(response => {
             if(response.ok){
-                setCustomer(null)
+                setUser(null)
             }
             else{
-                alert("Error: Unable to log customer out!")
+                alert("Error: Unable to log user out!")
             }
         })
     }
 
     return (
       <div className="app">
-        <NavBar customer={customer} logOutCustomer={logOutCustomer}/>
+        <NavBar customer={user} logOutUser={logOutUser}/>
         <Header/>
-        {customer ? <h1>Welcome {customer.username}!</h1> : null}
-        {/* {!customer ? <Navigate to="/login"/> : null} */}
-        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInCustomer: logInCustomer}}/>
+        {user ? <h1>Welcome {user.username}!</h1> : null}
+        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInUser: logInUser}}/>
       </div>
     );
 }
