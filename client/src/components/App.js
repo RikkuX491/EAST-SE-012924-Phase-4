@@ -158,7 +158,7 @@ function App(){
 
     return (
       <div className="app">
-        <NavBar customer={user} logOutUser={logOutUser}/>
+        <NavBar user={user} logOutUser={logOutUser}/>
         <Header/>
         {user ? <h1>Welcome {user.username}!</h1> : null}
         <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInUser: logInUser}}/>

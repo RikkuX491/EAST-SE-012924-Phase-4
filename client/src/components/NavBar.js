@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
 
-function NavBar({customer, logOutUser}){
+function NavBar({user, logOutUser}){
     return (
         <nav className="navbar">
-            {customer ? 
+            {user ? 
                 <>
                     <NavLink to="/">Home</NavLink>
                     <NavLink to="/add_hotel">Add Hotel</NavLink>
