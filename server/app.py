@@ -38,22 +38,40 @@ api = Api(app)
 class AllHotels(Resource):
 
     def get(self):
-        hotels = Hotel.query.all()
-        response_body = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in hotels]
-        return make_response(response_body, 200)
+        user = User.query.filter(User.id == session.get('user_id')).first()
+
+        if user and user.type == 'admin':
+            hotels = Hotel.query.all()
+            response_body = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in hotels]
+            return make_response(response_body, 200)
+        elif user and user.type == 'customer':
+            response_body = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(user.hotels))]
+            return make_response(response_body, 200)
+        else:
+            response_body = {
+                "error": "You are not authorized to view the hotel data!"
+            }
+            return make_response(response_body, 401)
     
     def post(self):
-        try:
-            new_hotel = Hotel(name=request.json.get('name'), image=request.json.get('image'))
-            db.session.add(new_hotel)
-            db.session.commit()
-            response_body = new_hotel.to_dict(only=('id', 'name', 'image'))
-            return make_response(response_body, 201)
-        except:
+        user = User.query.filter(User.id == session.get('user_id')).first()
+        if user and user.type == 'admin':
+            try:
+                new_hotel = Hotel(name=request.json.get('name'), image=request.json.get('image'))
+                db.session.add(new_hotel)
+                db.session.commit()
+                response_body = new_hotel.to_dict(only=('id', 'name', 'image'))
+                return make_response(response_body, 201)
+            except:
+                response_body = {
+                    "error": "Hotel must have a name and image, and the hotel name cannot be the same name as any other hotel!"
+                }
+                return make_response(response_body, 400)
+        else:
             response_body = {
-                "error": "Hotel must have a name and image, and the hotel name cannot be the same name as any other hotel!"
+                "error": "You are not authorized to add new hotels!"
             }
-            return make_response(response_body, 400)
+            return make_response(response_body, 401)
     
 api.add_resource(AllHotels, '/hotels')
 
@@ -124,18 +142,18 @@ class AllUsers(Resource):
         user_list_with_dictionaries = [user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type')) for user in users]
         return make_response(user_list_with_dictionaries, 200)
     
-    def post(self):
-        try:
-            new_user = User(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'), password_hash=request.json.get('password'), type='customer')
-            db.session.add(new_user)
-            db.session.commit()
-            response_body = new_user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
-            return make_response(response_body, 201)
-        except:
-            response_body = {
-                "error": "User's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! User must have a username and password!"
-            }
-            return make_response(response_body, 400)
+    # def post(self):
+    #     try:
+    #         new_user = User(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'), password_hash=request.json.get('password'), type='customer')
+    #         db.session.add(new_user)
+    #         db.session.commit()
+    #         response_body = new_user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
+    #         return make_response(response_body, 201)
+    #     except:
+    #         response_body = {
+    #             "error": "User's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! User must have a username and password!"
+    #         }
+    #         return make_response(response_body, 400)
     
 api.add_resource(AllUsers, '/users')
 
@@ -282,9 +300,10 @@ class Login(Resource):
 
     def post(self):
         username = request.json.get('username')
+        password = request.json.get('password')
         user = User.query.filter(User.username == username).first()
 
-        if(user):
+        if(user and bcrypt.check_password_hash(user.password_hash, password)):
             session['user_id'] = user.id
             response_body = user.to_dict(rules=('-reviews.hotel', '-reviews.user', '-password_hash'))
 
@@ -294,7 +313,7 @@ class Login(Resource):
             return make_response(response_body, 201)
         else:
             response_body = {
-                "error": "Invalid username!"
+                "error": "Invalid username or password!"
             }
             return make_response(response_body, 401)
     
@@ -330,6 +349,26 @@ class Logout(Resource):
         return make_response(response_body, 204)
     
 api.add_resource(Logout, '/logout')
+
+class Signup(Resource):
+
+    def post(self):
+        try:
+            password = request.json.get('password')
+            pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+            new_user = User(first_name=request.json.get('first_name'), last_name=request.json.get('last_name'), username=request.json.get('username'), password_hash=pw_hash, type='customer')
+            db.session.add(new_user)
+            db.session.commit()
+            session['user_id'] = new_user.id
+            response_body = new_user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
+            return make_response(response_body, 201)
+        except:
+            response_body = {
+                "error": "User's first name and last name cannot be the same, and first name and last name must be at least 3 characters long! User must have a username and password!"
+            }
+            return make_response(response_body, 400)
+        
+api.add_resource(Signup, '/signup')
 
 if __name__ == "__main__":
     app.run(port=7777, debug=True)

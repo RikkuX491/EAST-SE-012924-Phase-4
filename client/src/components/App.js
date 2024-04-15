@@ -11,12 +11,21 @@ function App(){
     
     const [user, setUser] = useState(null)
 
+    // console.log(user)
+    // if(user){
+    //     console.log(user.type)
+    // }
+    // console.log(hotels)
+
     useEffect(() => {
         // GET request - Retrieve all hotels and update the 'hotels' state with the hotel data.
         fetch('/hotels')
-        .then(response => response.json())
-        .then(hotelsData => setHotels(hotelsData))
-    }, [])
+        .then(response => {
+            if(response.ok){
+                response.json().then(hotelsData => setHotels(hotelsData))
+            }
+        })
+    }, [user])
 
     useEffect(() => {
         // GET request - Check if the user is logged in
@@ -52,6 +61,9 @@ function App(){
                 })
             }
             else if(response.status === 400){
+                response.json().then(errorData => alert(`Error: ${errorData.error}`))
+            }
+            else if(response.status === 401){
                 response.json().then(errorData => alert(`Error: ${errorData.error}`))
             }
             else{
@@ -141,6 +153,28 @@ function App(){
         })
     }
 
+    function signUpUser(signupData){
+        fetch('/signup', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(signupData)
+        })
+        .then(response => {
+            if(response.ok){
+                response.json().then(userData => {
+                    setUser(userData)
+                    navigate('/')
+                })
+            }
+            else if(response.status === 400){
+                response.json().then(errorData => alert(`Error: ${errorData.error}`))
+            }
+        })
+    }
+
     function logOutUser(){
         // DELETE request - Log out a user.
         fetch('/logout', {
@@ -161,7 +195,7 @@ function App(){
         <NavBar user={user} logOutUser={logOutUser}/>
         <Header/>
         {user ? <h1>Welcome {user.username}!</h1> : null}
-        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInUser: logInUser}}/>
+        <Outlet context={{hotels: hotels, addHotel: addHotel, deleteHotel: deleteHotel, updateHotel: updateHotel, logInUser: logInUser, user: user, signUpUser: signUpUser}}/>
       </div>
     );
 }

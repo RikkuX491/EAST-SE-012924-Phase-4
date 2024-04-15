@@ -13,7 +13,7 @@ function HotelProfile(){
     // id - contains a number that refers to the id for the hotel that should be retrieved via fetch() (GET request) in the callback function in useEffect().
     const {id} = useParams()
 
-    const {deleteHotel, updateHotel} = useOutletContext()
+    const {deleteHotel, updateHotel, user} = useOutletContext()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -61,23 +61,33 @@ function HotelProfile(){
         setFormData({...formData, [event.target.name]: event.target.value})
     }
 
+    function displayButtonsOrEditForm(){
+        if(!displayForm){
+            return (
+                <div className="button-div">
+                    <button onClick={toggleDisplayForm} className="update-button">Update Hotel</button>
+                    <button onClick={handleDeleteButtonClick} className="delete-button">Delete Hotel</button>
+                </div>
+            )
+        }
+        else{
+            return (
+                <form onSubmit={handleSubmit} className="edit-hotel">
+                    <input onChange={updateFormData} type="text" name="name" placeholder="Hotel name" value={formData.name} />
+                    <input onChange={updateFormData} type="text" name="image" placeholder="Image URL" value={formData.image} />
+                    <button type="submit">Save Changes</button>
+                </form>   
+            )
+        }
+    }
+
     return (
         <>
             {hotel ?
             <div className="hotel-profile">
                 <img src={hotel.image} alt={hotel.name}/>
                 <h4>{hotel.name}</h4>
-                { !displayForm ?
-                <div className="button-div">
-                    <button onClick={toggleDisplayForm} className="update-button">Update Hotel</button>
-                    <button onClick={handleDeleteButtonClick} className="delete-button">Delete Hotel</button>
-                </div> :
-                <form onSubmit={handleSubmit} className="edit-hotel">
-                    <input onChange={updateFormData} type="text" name="name" placeholder="Hotel name" value={formData.name} />
-                    <input onChange={updateFormData} type="text" name="image" placeholder="Image URL" value={formData.image} />
-                    <button type="submit">Save Changes</button>
-                </form>
-                }
+                {user && user.type === 'admin' ? displayButtonsOrEditForm() : null}
             </div> :
             null
             }

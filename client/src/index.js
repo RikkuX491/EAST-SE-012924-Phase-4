@@ -10,6 +10,7 @@ import HotelList from './components/HotelList';
 import NewHotelForm from './components/NewHotelForm';
 import HotelProfile from './components/HotelProfile';
 import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginForm/>
+      },
+      {
+        path: "/signup",
+        element: <SignupForm/>
       }
     ]
   }
