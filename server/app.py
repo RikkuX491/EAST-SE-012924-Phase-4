@@ -360,7 +360,13 @@ class Signup(Resource):
             db.session.add(new_user)
             db.session.commit()
             session['user_id'] = new_user.id
-            response_body = new_user.to_dict(only=('id', 'first_name', 'last_name', 'username', 'type'))
+
+            # Updated the response_body here to be consistent with the serialized data in the responses from '/login' and '/check_session'.
+            response_body = new_user.to_dict(rules=('-reviews.hotel', '-reviews.user', '-password_hash'))
+
+            # Add in the association proxy data (The user's hotels) while removing duplicate hotel data for the user's hotels
+            response_body['hotels'] = [hotel.to_dict(only=('id', 'name', 'image')) for hotel in list(set(new_user.hotels))]
+
             return make_response(response_body, 201)
         except:
             response_body = {
